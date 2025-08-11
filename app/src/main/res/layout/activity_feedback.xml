@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Feedback"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enter your feedback and suggestions below:"
+            android:layout_marginTop="40dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#D6D9FB" />
+
+        <EditText
+            android:id="@+id/feedback_text"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:hint="Write your feedback and suggestions here"
+            android:gravity="top|start"
+            android:background="@android:drawable/edit_text"
+            android:textColor="#000000"
+            android:textColorHint="#9B9797"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:padding="10dp"
+            android:inputType="textMultiLine"
+            android:maxLines="100" />
+
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/feedback_send_button"
+
+            android:layout_marginStart="10dp"
+            android:padding="8dp"
+            android:src="@drawable/baseline_send_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+
+            />
+
+
+        <ImageView
+            android:layout_marginTop="40dp"
+            android:id="@+id/imageView8"
+            android:layout_width="80dp"
+            android:layout_height="100dp"
+            app:srcCompat="@drawable/log" />
+
+    </LinearLayout>
+
+
+</ScrollView>

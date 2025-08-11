@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group android:checkableBehavior="single">
+
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/baseline_home_24"/>
+
+    <item
+        android:id="@+id/nav_aidoctor"
+        android:title="AI DOCTOR"
+        android:icon="@drawable/aidoctor"/>
+    <item
+        android:id="@+id/nav_doctor"
+        android:title="DOCTOR"
+        android:icon="@drawable/aidoctor"/>
+
+    <item
+        android:id="@+id/nav_medicine"
+        android:title="Medicine Time"
+        android:icon="@drawable/medicine"/>
+    <item
+        android:id="@+id/nav_live_doctor"
+        android:title="Live Doctor"
+        android:icon="@drawable/livedoctor"/>
+    <item
+        android:id="@+id/nav_about"
+        android:title="About"
+        android:icon="@drawable/baseline_child_care_24"/>
+
+
+
+    <item
+        android:id="@+id/nav_profile"
+        android:title="profile"
+        android:icon="@drawable/profile"/>
+
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Log out"
+        android:icon="@drawable/logout"/>
+
+</group>
+
+
+
+
+
+    <item android:title="communication">
+<menu>
+
+    <item
+        android:id="@+id/nav_feedback1"
+        android:title="Feedback"
+        android:icon="@drawable/baseline_feedback_24"/>
+
+
+</menu>
+
+    </item>
+
+
+
+
+
+
+</menu>

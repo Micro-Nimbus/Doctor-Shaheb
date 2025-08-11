@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/aiDoctorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#717171">
+
+    <TextView
+        android:id="@+id/AIDoctor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AI Doctor"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:layout_alignParentTop="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerMessages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/AIDoctor"
+        android:layout_above="@id/bottom_layout"
+        android:padding="16dp"
+        android:scrollbars="vertical" />
+
+    <RelativeLayout
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/editMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/btnSend"
+            android:hint="Type your symptoms here..."
+            android:textColorHint="@android:color/darker_gray"
+            android:textColor="#000000"
+            android:padding="16dp"
+            android:background="@drawable/rounded_corner"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/baseline_send_24" />
+    </RelativeLayout>
+
+</RelativeLayout>

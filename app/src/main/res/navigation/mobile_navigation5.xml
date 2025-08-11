@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation5"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.micronimbus.doctorshaheb.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_medicine"
+        android:name="com.micronimbus.doctorshaheb.MedicineFragment"
+        android:label="Medicine"
+        tools:layout="@layout/fragment_medicine" />
+
+    <fragment
+        android:id="@+id/nav_ai_doctor"
+        android:name="com.micronimbus.doctorshaheb.AIDoctorFragment"
+        android:label="AI Doctor"
+        tools:layout="@layout/fragment_ai_doctor" />
+
+    <fragment
+        android:id="@+id/nav_live_doctor"
+        android:name="com.micronimbus.doctorshaheb.LiveDoctorFragment"
+        android:label="Live Doctor"
+        tools:layout="@layout/fragment_live_doctor" />
+
+    <fragment
+        android:id="@+id/nav_feedback"
+        android:name="com.micronimbus.doctorshaheb.FeedbackFragment"
+        android:label="Feedback"
+        tools:layout="@layout/fragment_feedback" />
+
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.micronimbus.doctorshaheb.AboutFragment"
+        android:label="About"
+        tools:layout="@layout/fragment_about" />
+
+</navigation>

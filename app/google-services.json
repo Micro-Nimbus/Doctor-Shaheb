@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "67620127316",
+    "project_id": "doctor-shaheb-3fb1a",
+    "storage_bucket": "doctor-shaheb-3fb1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67620127316:android:63c7083ea9040c07e223c1",
+        "android_client_info": {
+          "package_name": "com.micronimbus.doctorshaheb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-awGueC_fkurLSttRvOCqDu16IToCpY0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
