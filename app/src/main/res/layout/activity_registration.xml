@@ -55,10 +55,10 @@
         android:drawableLeft="@drawable/baseline_person_24"
         android:drawablePadding="10dp"
         android:elevation="3dp"
+        android:hint="Username"
         android:padding="5dp"
-        android:hint="Name"
-        android:textColorHint="@color/black"
         android:textColor="@color/black"
+        android:textColorHint="@color/black"
 
         app:layout_constraintBottom_toBottomOf="parent"
 
@@ -77,12 +77,12 @@
         android:drawableLeft="@drawable/baseline_alternate_email_24"
         android:drawablePadding="10dp"
         android:elevation="3dp"
-        android:padding="5dp"
-
         android:hint="Email"
-        android:textColorHint="@color/black"
-        android:textColor="@color/black"
+
         android:inputType="textEmailAddress"
+        android:padding="5dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
@@ -99,9 +99,9 @@
 
         android:drawablePadding="10dp"
         android:elevation="3dp"
-        android:padding="5dp"
         android:hint="Password"
         android:inputType="textPassword"
+        android:padding="5dp"
         android:textColor="@color/black"
         android:textColorHint="#ff0aba"
         app:layout_constraintEnd_toEndOf="parent"
@@ -109,6 +109,22 @@
         app:layout_constraintTop_toBottomOf="@+id/name"
         app:layout_constraintWidth_percent=".8"
         tools:ignore="MissingConstraints" />
+
+
+    <Spinner
+        android:id="@+id/bloodSpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="240dp"
+        android:background="#759ABF"
+        android:padding="5dp"
+        android:spinnerMode="dropdown"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.789"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        app:layout_constraintWidth_percent=".8" />
 
     <Button
         android:id="@+id/button_signup"
@@ -121,6 +137,19 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_reg" />
+
+
+    <Button
+        android:id="@+id/button_register_admin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:backgroundTint="#D7D1C6"
+        android:text="Register as Admin"
+        android:textColor="#1D38C5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/reg2" />
 
     <TextView
         android:id="@+id/textView2"
@@ -149,7 +178,6 @@
         app:layout_constraintTop_toBottomOf="@+id/button_signup" />
 
 
-
     <!-- Add this below password_reg and above Sign Up button -->
 
     <EditText
@@ -161,35 +189,57 @@
         android:drawableLeft="@drawable/baseline_calendar_today_24"
         android:drawablePadding="10dp"
         android:elevation="3dp"
-        android:padding="5dp"
         android:hint="Date of Birth"
-        android:textColorHint="@color/black"
-        android:textColor="@color/black"
         android:inputType="date"
+        android:padding="5dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_reg"
         app:layout_constraintWidth_percent=".8" />
 
-    <EditText
-        android:id="@+id/phone"
+    <LinearLayout
+        android:id="@+id/phone_container"
         android:layout_width="300dp"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="16dp"
-        android:background="@drawable/edittextbackgroung"
-        android:drawableLeft="@drawable/baseline_call_24"
-        android:drawablePadding="10dp"
-        android:elevation="3dp"
-        android:padding="5dp"
-        android:hint="Phone Number"
-        android:textColorHint="@color/black"
-        android:textColor="@color/black"
-
-        android:inputType="phone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dob"
-        app:layout_constraintWidth_percent=".8" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent=".8">
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/country_code_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:ccpDialog_showFlag="true"
+            app:ccpDialog_showTitle="true"
+            app:ccp_autoDetectCountry="true"
+            app:ccp_defaultNameCode="BD"
+            app:ccp_showArrow="true"
+            app:ccp_showFlag="true"
+            app:ccp_showFullName="false"
+            app:ccp_showNameCode="true" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/edittextbackgroung"
+            android:drawableLeft="@drawable/baseline_call_24"
+            android:drawablePadding="8dp"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black" />
+    </LinearLayout>
+
 
     <EditText
         android:id="@+id/country"
@@ -200,14 +250,14 @@
         android:drawableLeft="@drawable/baseline_flag_24"
         android:drawablePadding="10dp"
         android:elevation="3dp"
-        android:padding="5dp"
         android:hint="Country"
-        android:textColorHint="@color/black"
+        android:padding="5dp"
         android:textColor="@color/black"
+        android:textColorHint="@color/black"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone"
+        app:layout_constraintTop_toBottomOf="@+id/phone_container"
         app:layout_constraintWidth_percent=".8" />
 
 
@@ -223,8 +273,21 @@
         app:layout_constraintHorizontal_bias="0.474"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.857"/>
+        app:layout_constraintVertical_bias="0.857" />
 
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="151dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:background="#759ABF"
+        android:fontFamily="@font/adlam_display"
+        android:text="Blood Type"
+        android:textColor="#070707"
+        app:layout_constraintEnd_toStartOf="@+id/bloodSpinner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/country"
+        app:layout_constraintTop_toBottomOf="@+id/country" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

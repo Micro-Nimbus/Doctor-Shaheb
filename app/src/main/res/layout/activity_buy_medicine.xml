@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:layout_marginTop="2dp">
+
+        <EditText
+            android:id="@+id/searchMedicine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search medicine..."
+            android:padding="10dp"
+            android:background="@drawable/rounded_corner"
+            android:inputType="text"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/baseline_search_24" />
+
+        <Button
+            android:id="@+id/btnCart"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/baseline_shopping_cart_24" />
+
+        <TextView
+            android:id="@+id/cartCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#000"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <!-- Recent searches -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recentRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/topBar"
+        android:padding="8dp" />
+
+    <!-- Medicine Grid -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/medicineRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/recentRecycler"
+        android:padding="10dp" />
+</RelativeLayout>

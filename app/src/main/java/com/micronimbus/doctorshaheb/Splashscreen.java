@@ -16,7 +16,7 @@ public class Splashscreen extends AppCompatActivity {
         // Start a new thread to delay and then decide where to go
         new Thread(() -> {
             try {
-                Thread.sleep(3000); // Splash delay: 3 seconds
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/medicineImage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_launcher_background"
+        android:background="@drawable/rounded_corner"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <EditText
+        android:id="@+id/medicineName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/medicineImage"
+        android:layout_marginTop="16dp"
+        android:hint="Medicine Name"
+        android:padding="12dp"
+        android:background="@drawable/rounded_corner"/>
+
+    <EditText
+        android:id="@+id/medicineDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/medicineName"
+        android:layout_marginTop="12dp"
+        android:hint="Description"
+        android:padding="12dp"
+        android:background="@drawable/rounded_corner"/>
+
+    <EditText
+        android:id="@+id/medicinePrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/medicineDesc"
+        android:layout_marginTop="12dp"
+        android:hint="Price"
+        android:inputType="numberDecimal"
+        android:padding="12dp"
+        android:background="@drawable/rounded_corner"/>
+
+    <Button
+        android:id="@+id/btnAddMedicine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/medicinePrice"
+        android:layout_marginTop="20dp"
+        android:text="Add Medicine"/>
+</RelativeLayout>

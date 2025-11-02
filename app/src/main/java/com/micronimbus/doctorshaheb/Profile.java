@@ -80,50 +80,34 @@ public class Profile extends AppCompatActivity {
                         selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
                             profileImage.setImageURI(selectedImageUri);
-
                             dbHelper.updateImageUri(selectedImageUri.toString());
                         }
-
                     }
                 }
         );
 
         btnUploadImage.setOnClickListener(v -> openImageChooser());
 
-        btnSaveName.setOnClickListener(v -> {
-            String name = etName.getText().toString().trim();
-            String address = etAdd.getText().toString().trim();
-            String age = etAge.getText().toString().trim();
-            String height = etHeight.getText().toString().trim();
-            String weight = etWeight.getText().toString().trim();
-            String blood = etBlood.getText().toString().trim();
-            String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : "";
-
-            if (!name.isEmpty()) {
-                userRef.child("name").setValue(name);
-                dbHelper.saveProfile(imageUriString, address, age, height, weight, blood);
-                Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-        });
+        btnSaveName.setOnClickListener(v -> saveProfile());
     }
 
     private void loadFirebaseData() {
         tvEmail.setText(currentUser.getEmail());
 
-        userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        // Load both name and blood from Firebase database
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = snapshot.getValue(String.class);
-                if (name != null) {
-                    etName.setText(name);
-                }
+                String name = snapshot.child("name").getValue(String.class);
+                String blood = snapshot.child("bloodGroup").getValue(String.class);
+
+                if (name != null) etName.setText(name);
+                if (blood != null) etBlood.setText(blood);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(Profile.this, "Failed to load name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Profile.this, "Failed to load data", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -147,9 +131,33 @@ public class Profile extends AppCompatActivity {
             etAge.setText(age);
             etHeight.setText(height);
             etWeight.setText(weight);
-            etBlood.setText(blood);
+            if (blood != null && !blood.isEmpty()) etBlood.setText(blood);
         }
         cursor.close();
+    }
+
+    private void saveProfile() {
+        String name = etName.getText().toString().trim();
+        String address = etAdd.getText().toString().trim();
+        String age = etAge.getText().toString().trim();
+        String height = etHeight.getText().toString().trim();
+        String weight = etWeight.getText().toString().trim();
+        String blood = etBlood.getText().toString().trim();
+        String imageUriStr = selectedImageUri != null ? selectedImageUri.toString() : "";
+
+        if (name.isEmpty()) {
+            Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Save to Firebase
+        userRef.child("name").setValue(name);
+        userRef.child("bloodGroup").setValue(blood);
+
+        // Save locally
+        dbHelper.saveProfile(imageUriStr, address, age, height, weight, blood);
+
+        Toast.makeText(this, "Profile saved successfully", Toast.LENGTH_SHORT).show();
     }
 
     private void openImageChooser() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 <group android:checkableBehavior="single">
 
     <item
@@ -7,10 +8,7 @@
         android:title="Home"
         android:icon="@drawable/baseline_home_24"/>
 
-    <item
-        android:id="@+id/nav_aidoctor"
-        android:title="AI DOCTOR"
-        android:icon="@drawable/aidoctor"/>
+
     <item
         android:id="@+id/nav_doctor"
         android:title="DOCTOR"
@@ -21,9 +19,18 @@
         android:title="Medicine Time"
         android:icon="@drawable/medicine"/>
     <item
-        android:id="@+id/nav_live_doctor"
-        android:title="Live Doctor"
-        android:icon="@drawable/livedoctor"/>
+        android:id="@+id/nav_buy_medicine"
+        android:title="Buy Medicine"
+        android:icon="@drawable/medicine"/>
+    <item
+        android:id="@+id/nav_blood"
+        android:title="Angel Blood"
+        android:icon="@drawable/bloodtype"/>
+    <item
+        android:id="@+id/nav_Test"
+        android:title="Medical test Information"
+        android:icon="@drawable/test"/>
+
     <item
         android:id="@+id/nav_about"
         android:title="About"
@@ -54,6 +61,19 @@
         android:id="@+id/nav_feedback1"
         android:title="Feedback"
         android:icon="@drawable/baseline_feedback_24"/>
+
+    <item
+        android:id="@+id/nav_live_doctor"
+        android:title="Live Doctor"
+        android:icon="@drawable/livedoctor"/>
+    <item
+        android:id="@+id/nav_add_medicine"
+        android:title="Add Medicine"
+        android:icon="@drawable/addmedicine"/>
+    <item
+        android:id="@+id/nav_aidoctor"
+        android:title="AI Doctor"
+        android:icon="@drawable/aidoctor"/>
 
 
 </menu>

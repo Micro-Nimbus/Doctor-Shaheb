@@ -84,7 +84,7 @@ Toolbar toolbar;
 
             case R.id.nav_aidoctor:
                 Toast.makeText(this, "AI Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentai = new Intent(this, AIDoctor.class);
+                Intent intentai = new Intent(this, Doctor.class);
                 startActivity(intentai);
                 break;
 
@@ -118,6 +118,30 @@ Toolbar toolbar;
                 Intent feedIntent = new Intent(this, Feedback.class);
                 startActivity(feedIntent);
                 break;
+            case R.id.nav_buy_medicine:
+                Toast.makeText(this, "Feedback selected", Toast.LENGTH_SHORT).show();
+                Intent buyMedicineIntent = new Intent(this, BuyMedicineActivity.class);
+                startActivity(buyMedicineIntent);
+                break;
+
+            case R.id.nav_add_medicine:
+                Toast.makeText(this, "Add Medicine selected", Toast.LENGTH_SHORT).show();
+                Intent intentaddmed = new Intent(this, AddMedicineActivity.class);
+                startActivity(intentaddmed);
+                break;
+            case R.id.nav_blood:
+                Toast.makeText(this, "Angel blood selected", Toast.LENGTH_SHORT).show();
+                Intent blood = new Intent(this, Blood.class);
+                startActivity(blood);
+                break;
+            case R.id.nav_Test:
+                Toast.makeText(this, "Angel blood selected", Toast.LENGTH_SHORT).show();
+                Intent test = new Intent(this, MainActivity.class);
+                startActivity(test);
+                break;
+
+
+
         }
 drawerLayout.closeDrawer(GravityCompat.START);
 

@@ -88,6 +88,7 @@ public class Login extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
                             // Optionally redirect to dashboard or main screen
                             // startActivity(new Intent(Login.this, HomeActivity.class));
+                            
                             // finish();
 
                             // Redirect to MainActivity
