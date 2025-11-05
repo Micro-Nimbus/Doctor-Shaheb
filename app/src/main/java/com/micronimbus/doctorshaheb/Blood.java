@@ -198,6 +198,7 @@ public class Blood extends AppCompatActivity {
                 });
     }
 //utsho
+
     public static class BloodUser {
         public String name, phone, bloodGroup;
         public BloodUser() {}
