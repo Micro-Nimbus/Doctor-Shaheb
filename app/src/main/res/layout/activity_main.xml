@@ -91,13 +91,7 @@
                 app:layout_constraintTop_toBottomOf="@id/imageView6"
                 app:srcCompat="@drawable/mot" />
 
-            <TextView
-                android:id="@+id/textView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="antihfhh"
-                tools:layout_editor_absoluteX="158dp"
-                tools:layout_editor_absoluteY="1026dp" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
