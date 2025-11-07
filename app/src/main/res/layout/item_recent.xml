@@ -4,5 +4,6 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:textColor="#000"
-    android:background="@drawable/rounded_corner"
-    android:text="Recent Search" />
+    android:background="#CA9DE4"
+    android:text="Recent Search"
+    />
