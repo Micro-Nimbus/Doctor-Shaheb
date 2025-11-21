@@ -1,58 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/aiDoctorLayout"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#717171">
+    android:orientation="vertical"
+    android:background="#F0F0F0">
 
+    <!-- Header (Optional) -->
     <TextView
-        android:id="@+id/AIDoctor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="AI Doctor"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp"
-        android:layout_alignParentTop="true" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerMessages"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/AIDoctor"
-        android:layout_above="@id/bottom_layout"
+        android:text="AI Doctor Chat"
         android:padding="16dp"
-        android:scrollbars="vertical" />
+        android:background="#4338CA"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:elevation="4dp"/>
 
-    <RelativeLayout
-        android:id="@+id/bottom_layout"
+    <!-- Chat Messages List -->
+    <ListView
+        android:id="@+id/chat_list_view"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" />
+
+    <!-- Input Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp">
 
         <EditText
-            android:id="@+id/editMessage"
-            android:layout_width="match_parent"
+            android:id="@+id/input_message"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/btnSend"
-            android:hint="Type your symptoms here..."
-            android:textColorHint="@android:color/darker_gray"
-            android:textColor="#000000"
-            android:padding="16dp"
+            android:layout_weight="1"
+            android:hint="Ask your health question..."
+            android:padding="12dp"
             android:background="@drawable/rounded_corner"
-            android:inputType="text" />
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="4"/>
 
         <Button
-            android:id="@+id/btnSend"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send"
             android:layout_marginStart="8dp"
-            android:background="@drawable/baseline_send_24" />
-    </RelativeLayout>
+            android:backgroundTint="#4F46E5"
+            android:textColor="#FFFFFF"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"/>
+    </LinearLayout>
 
-</RelativeLayout>
+    <!-- Custom drawable resource for EditText (you'll need to create res/drawable/rounded_edittext.xml) -->
+    <!-- It is common to define custom drawable resources in Android -->
+
+</LinearLayout>

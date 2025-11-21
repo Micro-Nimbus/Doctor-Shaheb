@@ -84,7 +84,7 @@ Toolbar toolbar;
 
             case R.id.nav_aidoctor:
                 Toast.makeText(this, "AI Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentai = new Intent(this, Doctor.class);
+                Intent intentai = new Intent(this, AIDoctor.class);
                 startActivity(intentai);
                 break;
 
