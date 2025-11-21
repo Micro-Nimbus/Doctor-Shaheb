@@ -1,134 +1,350 @@
 package com.micronimbus.doctorshaheb;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import com.micronimbus.doctorshaheb.R;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import android.util.Log;
+// --- Data Models ---
+class Source {
+    public final String uri;
+    public final String title;
 
-public class AIDoctor extends AppCompatActivity {
+    public Source(String uri, String title) {
+        this.uri = uri;
+        this.title = title;
+    }
+}
 
-    private RecyclerView recyclerView;
-    private EditText editMessage;
-    private Button btnSend;
-    private MessageAdapter adapter;
-    private List<Message> messages = new ArrayList<>();
+class ChatMessage {
+    public final String role; // "user" or "model"
+    public final String text;
+    public final List<Source> sources;
 
-    private OkHttpClient client = new OkHttpClient();
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    public ChatMessage(String role, String text, List<Source> sources) {
+        this.role = role;
+        this.text = text;
+        this.sources = sources;
+    }
+}
 
-    private static final String API_KEY = "AIzaSyB7bku42iZfy9SmbmdJYQyv-HQ9Uc3VaH8";
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + API_KEY;
+// --- Configuration Constants ---
+final class Config {
+    public static final String GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+    public static final String SYSTEM_PROMPT = "You are a friendly, helpful, and knowledgeable AI Doctor. You provide general health information and advice, but you MUST remind the user that you are not a substitute for a licensed medical professional and they should consult a real doctor for diagnosis or treatment. Keep your responses empathetic and concise.";
+    public static final int MAX_RETRIES = 5;
+    public static final long BASE_DELAY_MS = 1000;
+
+    // IMPORTANT: Storing the key directly is risky. Use a secure backend/proxy in production.
+    public static final String GEMINI_API_KEY = "AIzaSyCra8isBteAFwM2BEFmqciDBENmu-Oj4z0"  ;
+}
+
+public class AIDoctor extends Activity {
+
+    private static final String TAG = "AIDoctorActivity";
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private List<ChatMessage> chatHistory;
+
+    // UI elements
+    private EditText inputMessage;
+    private Button sendButton;
+    private ListView chatListView;
+    private ChatAdapter chatAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Set layout from the XML file we will create below
         setContentView(R.layout.activity_aidoctor);
 
-        recyclerView = findViewById(R.id.recyclerMessages);
-        editMessage = findViewById(R.id.editMessage);
-        btnSend = findViewById(R.id.btnSend);
+        // Initialize Chat History with a welcome message
+        chatHistory = new ArrayList<>();
+        chatHistory.add(new ChatMessage("model", "Hello! I'm your AI Doctor assistant. I can help with general health questions, but remember to always consult a licensed medical professional for real diagnosis and treatment. What's on your mind today?", new ArrayList<>()));
 
-        adapter = new MessageAdapter(messages);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+        // --- UI Initialization ---
+        inputMessage = findViewById(R.id.input_message);
+        sendButton = findViewById(R.id.send_button);
+        chatListView = findViewById(R.id.chat_list_view);
 
-        addMessage("🤖 Hi! Please tell me your symptoms one by one.", false);
+        // Initialize the custom Adapter
+        chatAdapter = new ChatAdapter(this, chatHistory);
+        chatListView.setAdapter(chatAdapter);
+        // -------------------------
 
-        btnSend.setOnClickListener(v -> {
-            String userInput = editMessage.getText().toString().trim();
-            if (userInput.isEmpty()) return;
-
-            addMessage(userInput, true);
-            editMessage.setText("");
-
-            if (isGreeting(userInput)) {
-                addMessage("🤖 Hello! Please tell me your symptoms one at a time.", false);
-            } else {
-                callGeminiAPI(userInput);
+        // Example click listener for the Send button:
+        sendButton.setOnClickListener(v -> {
+            String message = inputMessage.getText().toString().trim();
+            if (!message.isEmpty()) {
+                sendMessage(message);
+                inputMessage.setText("");
             }
         });
     }
 
-    private boolean isGreeting(String input) {
-        String msg = input.toLowerCase();
-        return msg.equals("hi") || msg.equals("hello") || msg.equals("hey");
+    /**
+     * Executes the network request in a background thread with retries.
+     * @param userMessage The message typed by the user.
+     */
+    private void sendMessage(String userMessage) {
+        // 1. Add user message and update UI
+        chatHistory.add(new ChatMessage("user", userMessage, new ArrayList<>()));
+        mainHandler.post(() -> {
+            chatAdapter.notifyDataSetChanged();
+            chatListView.setSelection(chatHistory.size() - 1); // Scroll to bottom
+            sendButton.setEnabled(false); // Disable button while loading
+        });
+
+        // 2. Start the API call in a background thread
+        executorService.execute(() -> {
+            String resultText = "Sorry, an API error occurred. Please try again.";
+            List<Source> sources = new ArrayList<>();
+            int attempt = 0;
+            boolean success = false;
+
+            while (attempt < Config.MAX_RETRIES && !success) {
+                try {
+                    if (attempt > 0) {
+                        // Exponential backoff
+                        long delay = (long) (Config.BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 100);
+                        Thread.sleep(delay);
+                    }
+
+                    String payload = createPayload();
+                    ApiResponse response = makeApiCall(payload);
+
+                    if (response.isSuccessful) {
+                        JSONObject jsonResponse = new JSONObject(response.body);
+                        JSONArray candidates = jsonResponse.optJSONArray("candidates");
+
+                        if (candidates != null && candidates.length() > 0) {
+                            JSONObject candidate = candidates.getJSONObject(0);
+
+                            // Extract Text
+                            JSONArray parts = candidate.optJSONObject("content").optJSONArray("parts");
+                            resultText = parts.optJSONObject(0).optString("text", resultText);
+
+                            // Extract Grounding Sources
+                            JSONObject groundingMetadata = candidate.optJSONObject("groundingMetadata");
+                            JSONArray attributions = groundingMetadata != null ? groundingMetadata.optJSONArray("groundingAttributions") : null;
+
+                            sources.clear();
+                            if (attributions != null) {
+                                for (int i = 0; i < attributions.length(); i++) {
+                                    JSONObject attr = attributions.getJSONObject(i);
+                                    JSONObject web = attr.optJSONObject("web");
+                                    String uri = web != null ? web.optString("uri") : null;
+                                    String title = web != null ? web.optString("title") : null;
+                                    if (uri != null && title != null) {
+                                        sources.add(new Source(uri, title));
+                                    }
+                                }
+                            }
+                            success = true;
+                        }
+                    } else if (response.statusCode == 429) {
+                        attempt++;
+                    } else {
+                        throw new Exception("HTTP Error: " + response.statusCode + " - " + response.body);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "API attempt " + (attempt + 1) + " failed.", e);
+                    attempt++;
+                }
+            }
+
+            // 3. Update UI on the main thread with the result
+            final String finalResultText = resultText;
+            final List<Source> finalSources = sources;
+            final boolean finalSuccess = success;
+
+            mainHandler.post(() -> {
+                // Add model response
+                chatHistory.add(new ChatMessage("model", finalResultText, finalSources));
+                chatAdapter.notifyDataSetChanged();
+                chatListView.setSelection(chatHistory.size() - 1);
+                sendButton.setEnabled(true); // Re-enable button
+
+                if (!finalSuccess) {
+                    // Corrected context reference from AIDoctorActivity.this to AIDoctor.this
+                    Toast.makeText(AIDoctor.this, "Failed to get response after multiple attempts.", Toast.LENGTH_LONG).show();
+                }
+            });
+        });
     }
 
-    private void callGeminiAPI(String userInput) {
-        JSONObject requestBody = new JSONObject();
+    private String createPayload() {
         try {
-            JSONObject content = new JSONObject();
-            content.put("parts", new org.json.JSONArray().put(new JSONObject().put("text", userInput)));
-            requestBody.put("contents", new org.json.JSONArray().put(content));
+            JSONArray contentsArray = new JSONArray();
+            for (ChatMessage message : chatHistory) {
+                JSONObject part = new JSONObject();
+                part.put("text", message.text);
+
+                JSONArray parts = new JSONArray();
+                parts.put(part);
+
+                JSONObject content = new JSONObject();
+                content.put("role", message.role.equals("user") ? "user" : "model");
+                content.put("parts", parts);
+
+                contentsArray.put(content);
+            }
+
+            JSONObject payload = new JSONObject();
+            payload.put("contents", contentsArray);
+
+            JSONArray toolsArray = new JSONArray();
+            toolsArray.put(new JSONObject().put("google_search", new JSONObject()));
+            payload.put("tools", toolsArray);
+
+            JSONObject systemInstruction = new JSONObject();
+            JSONArray sysParts = new JSONArray();
+            sysParts.put(new JSONObject().put("text", Config.SYSTEM_PROMPT));
+            systemInstruction.put("parts", sysParts);
+            payload.put("systemInstruction", systemInstruction);
+
+            return payload.toString();
         } catch (Exception e) {
-            runOnUiThread(() -> addMessage("🤖 Failed to create request.", false));
-            return;
+            Log.e(TAG, "Error creating JSON payload", e);
+            return "{}";
+        }
+    }
+
+    private static class ApiResponse {
+        public final boolean isSuccessful;
+        public final int statusCode;
+        public final String body;
+
+        public ApiResponse(boolean isSuccessful, int statusCode, String body) {
+            this.isSuccessful = isSuccessful;
+            this.statusCode = statusCode;
+            this.body = body;
+        }
+    }
+
+    private ApiResponse makeApiCall(String payload) {
+        String urlString = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
+                Config.GEMINI_MODEL, Config.GEMINI_API_KEY);
+        HttpURLConnection connection = null;
+
+        try {
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream outputStream = connection.getOutputStream()) {
+                outputStream.write(payload.getBytes("UTF-8"));
+            }
+
+            int responseCode = connection.getResponseCode();
+            boolean isSuccessful = responseCode >= 200 && responseCode < 300;
+
+            BufferedReader reader;
+            if (isSuccessful) {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            }
+
+            StringBuilder responseBody = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                responseBody.append(line);
+            }
+            reader.close();
+
+            return new ApiResponse(isSuccessful, responseCode, responseBody.toString());
+
+        } catch (Exception e) {
+            Log.e(TAG, "Network error in makeApiCall", e);
+            return new ApiResponse(false, -1, "Network error: " + e.getMessage());
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    // --- Basic Chat Adapter Implementation ---
+    private class ChatAdapter extends ArrayAdapter<ChatMessage> {
+        private final Context context;
+
+        public ChatAdapter(Context context, List<ChatMessage> messages) {
+            super(context, 0, messages);
+            this.context = context;
         }
 
-        RequestBody body = RequestBody.create(requestBody.toString(), JSON);
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ChatMessage message = getItem(position);
 
-        Request request = new Request.Builder()
-                .url(GEMINI_API_URL)
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() ->
-                        addMessage("🤖 Sorry, something went wrong. Please try again.", false)
-                );
+            if (convertView == null) {
+                convertView = LayoutInflater.from(context).inflate(R.layout.item_chat_message, parent, false);
             }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseBody = response.body().string();
-                Log.d("MY_AI_RESPONSE", "Code: " + response.code() + " Body: " + responseBody);
+            TextView tvRole = convertView.findViewById(R.id.tv_role);
+            TextView tvMessage = convertView.findViewById(R.id.tv_message);
+            TextView tvSources = convertView.findViewById(R.id.tv_sources);
 
-                if (!response.isSuccessful()) {
-                    runOnUiThread(() -> addMessage("🤖 Error from AI service. Please try again.", false));
-                    return;
-                }
-
-                try {
-                    JSONObject json = new JSONObject(response.body().string());
-                    String reply = json
-                            .getJSONArray("candidates")
-                            .getJSONObject(0)
-                            .getJSONObject("content")
-                            .getJSONArray("parts")
-                            .getJSONObject(0)
-                            .getString("text");
-
-                    runOnUiThread(() -> addMessage("🤖 " + reply, false));
-                } catch (Exception e) {
-                    runOnUiThread(() -> addMessage("🤖 Failed to understand the AI response.", false));
-                }
+            // Determine gravity based on role (simple visual differentiation)
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((ViewGroup)tvMessage.getParent()).getLayoutParams();
+            if (message.role.equals("user")) {
+                params.gravity = android.view.Gravity.END;
+                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_user); // Using a specific user drawable
+                tvRole.setText("You");
+            } else {
+                params.gravity = android.view.Gravity.START;
+                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_model); // Using a specific model drawable
+                tvRole.setText("Dr. AI");
             }
-        });
-    }
+            ((ViewGroup)tvMessage.getParent()).setLayoutParams(params); // Apply gravity change
 
-    private void addMessage(String text, boolean isUser) {
-        messages.add(new Message(text, isUser));
-        adapter.notifyItemInserted(messages.size() - 1);
-        recyclerView.scrollToPosition(messages.size() - 1);
+            // Set message content
+            tvMessage.setText(message.text);
+
+            // Display sources
+            if (message.sources.isEmpty()) {
+                tvSources.setVisibility(View.GONE);
+            } else {
+                tvSources.setVisibility(View.VISIBLE);
+                StringBuilder sourceText = new StringBuilder("Sources:\n");
+                for (Source source : message.sources) {
+                    sourceText.append("- ").append(source.title).append("\n");
+                }
+                tvSources.setText(sourceText.toString());
+            }
+
+            return convertView;
+        }
     }
 }

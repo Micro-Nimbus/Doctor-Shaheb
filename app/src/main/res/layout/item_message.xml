@@ -5,23 +5,25 @@
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- User message -->
     <TextView
         android:id="@+id/textUserMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_user"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"
+        android:background="@drawable/user_bubble"
+        android:textColor="#000000"
+        android:padding="12dp"
         android:layout_gravity="end"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
+    <!-- Bot message -->
     <TextView
         android:id="@+id/textBotMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_bot"
-        android:padding="10dp"
-        android:textColor="#000000"
+        android:background="@drawable/bot_bubble"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
         android:layout_gravity="start"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 </LinearLayout>
