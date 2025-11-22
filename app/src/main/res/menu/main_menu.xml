@@ -9,10 +9,7 @@
         android:icon="@drawable/baseline_home_24"/>
 
 
-    <item
-        android:id="@+id/nav_doctor"
-        android:title="DOCTOR"
-        android:icon="@drawable/aidoctor"/>
+
 
     <item
         android:id="@+id/nav_medicine"
@@ -66,10 +63,7 @@
         android:id="@+id/nav_live_doctor"
         android:title="Live Doctor"
         android:icon="@drawable/livedoctor"/>
-    <item
-        android:id="@+id/nav_add_medicine"
-        android:title="Add Medicine"
-        android:icon="@drawable/addmedicine"/>
+
     <item
         android:id="@+id/nav_aidoctor"
         android:title="AI Doctor"
@@ -80,7 +74,27 @@
 
     </item>
 
+    <item android:title="Doctor Related">
+        <menu>
 
+
+
+            <item
+                android:id="@+id/nav_my_appointment"
+                android:title="My Appointment"
+                android:icon="@drawable/livedoctor"/>
+            <item
+                android:id="@+id/nav_doctor_appointment"
+                android:title="DOCTOR Appointment"
+                android:icon="@drawable/aidoctor"/>
+            <item
+                android:id="@+id/nav_add_doctor"
+                android:title="Add Doctor"
+                android:icon="@drawable/addmedicine"/>
+
+        </menu>
+
+    </item>
 
 
 

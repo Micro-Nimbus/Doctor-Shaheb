@@ -19,6 +19,7 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
         }
+
     }
 
     buildTypes {
@@ -34,6 +35,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+        sourceCompatibility= JavaVersion.VERSION_1_8
+        targetCompatibility =JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -66,6 +70,7 @@ dependencies {
     implementation(libs.legacy.support.v4)
     implementation(libs.volley)
     implementation(libs.firebase.firestore)
+    implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -96,6 +101,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt:2.4.1")
     implementation("io.github.jan-tennert.supabase:postgrest-kt:2.4.1")
     implementation("io.github.jan-tennert.supabase:realtime-kt:2.4.1")
+    implementation("com.google.ai.client.generativeai:common:0.7.0")
+
+
+
 
     dependencies {
         implementation("io.github.jan-tennert.supabase:gotrue-kt:2.4.3")

@@ -84,14 +84,14 @@ Toolbar toolbar;
 
             case R.id.nav_aidoctor:
                 Toast.makeText(this, "AI Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentai = new Intent(this, Doctor.class);
+                Intent intentai = new Intent(this, AIDoctor.class);
                 startActivity(intentai);
                 break;
 
-            case R.id.nav_doctor:
-                Toast.makeText(this, "AI Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentdoc = new Intent(this, Doctor.class);
-                startActivity(intentdoc);
+            case R.id.nav_doctor_appointment:
+                Toast.makeText(this, "Book appoitment selected", Toast.LENGTH_SHORT).show();
+                Intent intentbook = new Intent(this, BookAppointmentActivity.class);
+                startActivity(intentbook );
                 break;
 
             case R.id.nav_live_doctor:
@@ -119,14 +119,14 @@ Toolbar toolbar;
                 startActivity(feedIntent);
                 break;
             case R.id.nav_buy_medicine:
-                Toast.makeText(this, "Feedback selected", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Buy medicine selected", Toast.LENGTH_SHORT).show();
                 Intent buyMedicineIntent = new Intent(this, BuyMedicineActivity.class);
                 startActivity(buyMedicineIntent);
                 break;
 
-            case R.id.nav_add_medicine:
+            case R.id.nav_add_doctor:
                 Toast.makeText(this, "Add Medicine selected", Toast.LENGTH_SHORT).show();
-                Intent intentaddmed = new Intent(this, AddMedicineActivity.class);
+                Intent intentaddmed = new Intent(this, AddDoctorActivity.class);
                 startActivity(intentaddmed);
                 break;
             case R.id.nav_blood:
@@ -138,6 +138,11 @@ Toolbar toolbar;
                 Toast.makeText(this, "Angel blood selected", Toast.LENGTH_SHORT).show();
                 Intent test = new Intent(this, MainActivity.class);
                 startActivity(test);
+                break;
+            case R.id.nav_my_appointment:
+
+                Intent myappointment = new Intent(this, MyAppointmentsActivity.class);
+                startActivity(myappointment);
                 break;
 
 
