@@ -94,10 +94,10 @@ Toolbar toolbar;
                 startActivity(intentbook );
                 break;
 
-            case R.id.nav_live_doctor:
+            case R.id.nav_med_doc:
                 Toast.makeText(this, "Live Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentLI = new Intent(this, LiveDoctor.class);
-                startActivity(intentLI);
+                Intent intentmeddoc = new Intent(this, DocumentsActivity.class);
+                startActivity(intentmeddoc);
                 break;
 
             case R.id.nav_profile:

@@ -393,6 +393,7 @@ public class AIDoctor extends Activity {
                 for (Source source : message.sources) {
                     sourceText.append("- ").append(source.title).append("\n");
                 }
+
                 tvSources.setText(sourceText.toString());
             }
 
