@@ -37,6 +37,7 @@ public class AddDoctorActivity extends AppCompatActivity {
         specialization = findViewById(R.id.spinnerSpecialization);
         btnAdd = findViewById(R.id.btnAddDoctor);
 
+
         String[] sectors = {"Cardiologist","Dermatologist","ENT","Neurologist","Pediatrician"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
