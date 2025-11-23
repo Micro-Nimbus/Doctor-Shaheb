@@ -1,71 +1,110 @@
 package com.micronimbus.doctorshaheb;
 
-import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-DrawerLayout drawerLayout;
-NavigationView navigationView;
-Toolbar toolbar;
 
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    Toolbar toolbar;
+    RecyclerView recyclerView;
+    ArrayList<Integer> imageList;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        drawerLayout=findViewById(R.id.nev_draw);
-        navigationView=findViewById(R.id.nav_view);
-        toolbar=findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.nev_draw);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        recyclerView = findViewById(R.id.recycler_home_images);
 
         setSupportActionBar(toolbar);
 
-
-        navigationView.bringToFront();
-
-        ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
-
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-
+        navigationView.bringToFront();
         navigationView.setCheckedItem(R.id.nav_home);
 
+        setupImageList();
     }
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.nev_draw);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
 
-            super.onBackPressed();
+    private void setupImageList() {
+        imageList = new ArrayList<>();
+        imageList.add(R.drawable.den);
+        imageList.add(R.drawable.hiv);
+        imageList.add(R.drawable.mal);
+        imageList.add(R.drawable.mot);
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // Vertical list
+        recyclerView.setAdapter(new ImageAdapter());
+    }
+
+    private class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
+
+        @NonNull
+        @Override
+        public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_image_linear, parent, false);
+            return new ImageViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+            int imgRes = imageList.get(position);
+            holder.imageView.setImageResource(imgRes);
+
+            holder.imageView.setOnClickListener(v -> {
+                Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(R.layout.dialog_zoom_image);
+                ImageView zoomImage = dialog.findViewById(R.id.zoom_image);
+                zoomImage.setImageResource(imgRes);
+                dialog.show();
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return imageList.size();
+        }
+
+        class ImageViewHolder extends RecyclerView.ViewHolder {
+            ImageView imageView;
+            ImageViewHolder(@NonNull View itemView) {
+                super(itemView);
+                imageView = itemView.findViewById(R.id.home_image);
+            }
         }
     }
 
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-
         switch (menuItem.getItemId()) {
             case R.id.nav_home:
 
@@ -94,10 +133,10 @@ Toolbar toolbar;
                 startActivity(intentbook );
                 break;
 
-            case R.id.nav_live_doctor:
+            case R.id.nav_med_doc:
                 Toast.makeText(this, "Live Doctor selected", Toast.LENGTH_SHORT).show();
-                Intent intentLI = new Intent(this, LiveDoctor.class);
-                startActivity(intentLI);
+                Intent intentmeddoc = new Intent(this, DocumentsActivity.class);
+                startActivity(intentmeddoc);
                 break;
 
             case R.id.nav_profile:
@@ -144,13 +183,16 @@ Toolbar toolbar;
                 Intent myappointment = new Intent(this, MyAppointmentsActivity.class);
                 startActivity(myappointment);
                 break;
-
-
-
         }
-drawerLayout.closeDrawer(GravityCompat.START);
-
-
+        drawerLayout.closeDrawers();
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(navigationView)) {
+            drawerLayout.closeDrawer(navigationView);
+        } else super.onBackPressed();
+    }
 }
+//utsho?00000

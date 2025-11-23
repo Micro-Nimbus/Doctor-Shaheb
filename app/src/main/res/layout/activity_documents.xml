@@ -6,18 +6,24 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <Button
+        android:id="@+id/button_add_doc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Medical Document (PDF/Image/Word)"
+        android:layout_marginBottom="16dp"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="List of Appointments"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:paddingTop="30dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/adlam_display"/>
+        android:text="Saved Documents:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/black"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAppointments"
+        android:id="@+id/recycler_documents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

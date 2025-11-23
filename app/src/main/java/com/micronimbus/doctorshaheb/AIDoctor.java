@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.micronimbus.doctorshaheb.R;
 
 import org.json.JSONArray;
@@ -63,7 +72,7 @@ final class Config {
     public static final long BASE_DELAY_MS = 1000;
 
     // IMPORTANT: Storing the key directly is risky. Use a secure backend/proxy in production.
-    public static final String GEMINI_API_KEY = "AIzaSyCra8isBteAFwM2BEFmqciDBENmu-Oj4z0"  ;
+    public static final String GEMINI_API_KEY = "AIzaSyD9vxhtqgK-owGzAVcBrTfs7en_A8UW8f0";
 }
 
 public class AIDoctor extends Activity {
@@ -80,27 +89,33 @@ public class AIDoctor extends Activity {
     private ListView chatListView;
     private ChatAdapter chatAdapter;
 
+    // Firebase
+    private DatabaseReference chatRef;
+    private String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set layout from the XML file we will create below
         setContentView(R.layout.activity_aidoctor);
 
-        // Initialize Chat History with a welcome message
-        chatHistory = new ArrayList<>();
-        chatHistory.add(new ChatMessage("model", "Hello! I'm your AI Doctor assistant. I can help with general health questions, but remember to always consult a licensed medical professional for real diagnosis and treatment. What's on your mind today?", new ArrayList<>()));
+        // Firebase setup
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        chatRef = FirebaseDatabase.getInstance().getReference("chats").child(userId);
 
-        // --- UI Initialization ---
+        // UI Initialization
         inputMessage = findViewById(R.id.input_message);
         sendButton = findViewById(R.id.send_button);
         chatListView = findViewById(R.id.chat_list_view);
 
-        // Initialize the custom Adapter
+        // Chat history list and adapter
+        chatHistory = new ArrayList<>();
         chatAdapter = new ChatAdapter(this, chatHistory);
         chatListView.setAdapter(chatAdapter);
-        // -------------------------
 
-        // Example click listener for the Send button:
+        // Load previous chat from Firebase
+        loadChatHistoryFromFirebase();
+
+        // Send button click
         sendButton.setOnClickListener(v -> {
             String message = inputMessage.getText().toString().trim();
             if (!message.isEmpty()) {
@@ -110,20 +125,63 @@ public class AIDoctor extends Activity {
         });
     }
 
-    /**
-     * Executes the network request in a background thread with retries.
-     * @param userMessage The message typed by the user.
-     */
+    /** Load chat history from Firebase with live updates */
+    private void loadChatHistoryFromFirebase() {
+        chatRef.orderByChild("timestamp").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                chatHistory.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String role = child.child("role").getValue(String.class);
+                    String text = child.child("text").getValue(String.class);
+                    if (role != null && text != null) {
+                        chatHistory.add(new ChatMessage(role, text, new ArrayList<>()));
+                    }
+                }
+
+                // If empty, add welcome message
+                if (chatHistory.isEmpty()) {
+                    ChatMessage welcome = new ChatMessage("model",
+                            "Hello! I'm your AI Doctor assistant. I can help with general health questions, but remember to always consult a licensed medical professional for real diagnosis and treatment. What's on your mind today?",
+                            new ArrayList<>());
+                    chatHistory.add(welcome);
+                    saveMessageToFirebase(welcome);
+                }
+
+                chatAdapter.notifyDataSetChanged();
+                chatListView.setSelection(chatHistory.size() - 1);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Failed to read chat", error.toException());
+            }
+        });
+    }
+
+    /** Save a message to Firebase */
+    private void saveMessageToFirebase(ChatMessage message) {
+        String messageId = chatRef.push().getKey();
+        if (messageId != null) {
+            chatRef.child(messageId).child("role").setValue(message.role);
+            chatRef.child(messageId).child("text").setValue(message.text);
+            chatRef.child(messageId).child("timestamp").setValue(System.currentTimeMillis());
+        }
+    }
+
+    /** Send user message and call Gemini API */
     private void sendMessage(String userMessage) {
-        // 1. Add user message and update UI
-        chatHistory.add(new ChatMessage("user", userMessage, new ArrayList<>()));
+        // Add user message
+        ChatMessage userMsg = new ChatMessage("user", userMessage, new ArrayList<>());
+        chatHistory.add(userMsg);
+        saveMessageToFirebase(userMsg);
+
         mainHandler.post(() -> {
             chatAdapter.notifyDataSetChanged();
-            chatListView.setSelection(chatHistory.size() - 1); // Scroll to bottom
-            sendButton.setEnabled(false); // Disable button while loading
+            chatListView.setSelection(chatHistory.size() - 1);
+            sendButton.setEnabled(false);
         });
 
-        // 2. Start the API call in a background thread
         executorService.execute(() -> {
             String resultText = "Sorry, an API error occurred. Please try again.";
             List<Source> sources = new ArrayList<>();
@@ -133,7 +191,6 @@ public class AIDoctor extends Activity {
             while (attempt < Config.MAX_RETRIES && !success) {
                 try {
                     if (attempt > 0) {
-                        // Exponential backoff
                         long delay = (long) (Config.BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * 100);
                         Thread.sleep(delay);
                     }
@@ -148,11 +205,9 @@ public class AIDoctor extends Activity {
                         if (candidates != null && candidates.length() > 0) {
                             JSONObject candidate = candidates.getJSONObject(0);
 
-                            // Extract Text
                             JSONArray parts = candidate.optJSONObject("content").optJSONArray("parts");
                             resultText = parts.optJSONObject(0).optString("text", resultText);
 
-                            // Extract Grounding Sources
                             JSONObject groundingMetadata = candidate.optJSONObject("groundingMetadata");
                             JSONArray attributions = groundingMetadata != null ? groundingMetadata.optJSONArray("groundingAttributions") : null;
 
@@ -181,26 +236,26 @@ public class AIDoctor extends Activity {
                 }
             }
 
-            // 3. Update UI on the main thread with the result
             final String finalResultText = resultText;
             final List<Source> finalSources = sources;
             final boolean finalSuccess = success;
 
             mainHandler.post(() -> {
-                // Add model response
-                chatHistory.add(new ChatMessage("model", finalResultText, finalSources));
+                ChatMessage modelMsg = new ChatMessage("model", finalResultText, finalSources);
+                chatHistory.add(modelMsg);
+                saveMessageToFirebase(modelMsg);
                 chatAdapter.notifyDataSetChanged();
                 chatListView.setSelection(chatHistory.size() - 1);
-                sendButton.setEnabled(true); // Re-enable button
+                sendButton.setEnabled(true);
 
                 if (!finalSuccess) {
-                    // Corrected context reference from AIDoctorActivity.this to AIDoctor.this
                     Toast.makeText(AIDoctor.this, "Failed to get response after multiple attempts.", Toast.LENGTH_LONG).show();
                 }
             });
         });
     }
 
+    /** Build Gemini API payload */
     private String createPayload() {
         try {
             JSONArray contentsArray = new JSONArray();
@@ -238,6 +293,7 @@ public class AIDoctor extends Activity {
         }
     }
 
+    /** Gemini API Response Wrapper */
     private static class ApiResponse {
         public final boolean isSuccessful;
         public final int statusCode;
@@ -250,8 +306,10 @@ public class AIDoctor extends Activity {
         }
     }
 
+    /** Make Gemini API call */
     private ApiResponse makeApiCall(String payload) {
-        String urlString = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
+        String urlString = String.format(
+                "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
                 Config.GEMINI_MODEL, Config.GEMINI_API_KEY);
         HttpURLConnection connection = null;
 
@@ -269,12 +327,8 @@ public class AIDoctor extends Activity {
             int responseCode = connection.getResponseCode();
             boolean isSuccessful = responseCode >= 200 && responseCode < 300;
 
-            BufferedReader reader;
-            if (isSuccessful) {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-            }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    isSuccessful ? connection.getInputStream() : connection.getErrorStream()));
 
             StringBuilder responseBody = new StringBuilder();
             String line;
@@ -295,7 +349,7 @@ public class AIDoctor extends Activity {
         }
     }
 
-    // --- Basic Chat Adapter Implementation ---
+    /** Chat Adapter */
     private class ChatAdapter extends ArrayAdapter<ChatMessage> {
         private final Context context;
 
@@ -304,8 +358,9 @@ public class AIDoctor extends Activity {
             this.context = context;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             ChatMessage message = getItem(position);
 
             if (convertView == null) {
@@ -316,23 +371,20 @@ public class AIDoctor extends Activity {
             TextView tvMessage = convertView.findViewById(R.id.tv_message);
             TextView tvSources = convertView.findViewById(R.id.tv_sources);
 
-            // Determine gravity based on role (simple visual differentiation)
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((ViewGroup)tvMessage.getParent()).getLayoutParams();
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((ViewGroup) tvMessage.getParent()).getLayoutParams();
             if (message.role.equals("user")) {
-                params.gravity = android.view.Gravity.END;
-                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_user); // Using a specific user drawable
+                params.gravity = Gravity.END;
+                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_user);
                 tvRole.setText("You");
             } else {
-                params.gravity = android.view.Gravity.START;
-                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_model); // Using a specific model drawable
+                params.gravity = Gravity.START;
+                tvMessage.setBackgroundResource(R.drawable.rounded_bubble_model);
                 tvRole.setText("Dr. AI");
             }
-            ((ViewGroup)tvMessage.getParent()).setLayoutParams(params); // Apply gravity change
+            ((ViewGroup) tvMessage.getParent()).setLayoutParams(params);
 
-            // Set message content
             tvMessage.setText(message.text);
 
-            // Display sources
             if (message.sources.isEmpty()) {
                 tvSources.setVisibility(View.GONE);
             } else {
@@ -341,6 +393,7 @@ public class AIDoctor extends Activity {
                 for (Source source : message.sources) {
                     sourceText.append("- ").append(source.title).append("\n");
                 }
+
                 tvSources.setText(sourceText.toString());
             }
 
@@ -348,3 +401,4 @@ public class AIDoctor extends Activity {
         }
     }
 }
+//utshho

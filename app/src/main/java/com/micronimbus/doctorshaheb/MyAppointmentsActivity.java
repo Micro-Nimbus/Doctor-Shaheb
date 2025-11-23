@@ -1,14 +1,17 @@
 package com.micronimbus.doctorshaheb;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,9 +25,10 @@ import java.util.ArrayList;
 
 public class MyAppointmentsActivity extends AppCompatActivity {
 
-    ListView listView;
+    RecyclerView recyclerView;
     DatabaseReference appointmentRef;
     FirebaseUser currentUser;
+
     ArrayList<String> appointmentList = new ArrayList<>();
     ArrayList<String> appointmentIDs = new ArrayList<>();
 
@@ -33,21 +37,13 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_appointments);
 
-        listView = findViewById(R.id.listAppointments);
+        recyclerView = findViewById(R.id.recyclerAppointments);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         appointmentRef = FirebaseDatabase.getInstance().getReference("appointment");
 
         loadAppointments();
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            String appID = appointmentIDs.get(position);
-            appointmentRef.child(appID).removeValue().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(MyAppointmentsActivity.this, "Appointment Cancelled", Toast.LENGTH_SHORT).show();
-                    loadAppointments();
-                }
-            });
-        });
     }
 
     private void loadAppointments() {
@@ -62,7 +58,6 @@ public class MyAppointmentsActivity extends AppCompatActivity {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     String userID = ds.child("userID").getValue(String.class);
                     if (userID != null && userID.equals(currentUser.getUid())) {
-
                         String date = ds.child("date").getValue(String.class);
                         String doctorName = ds.child("doctorName").getValue(String.class);
                         String specialization = ds.child("specialization").getValue(String.class);
@@ -75,8 +70,9 @@ public class MyAppointmentsActivity extends AppCompatActivity {
                         appointmentIDs.add(ds.getKey());
                     }
                 }
-                listView.setAdapter(new ArrayAdapter<>(MyAppointmentsActivity.this,
-                        android.R.layout.simple_list_item_1, appointmentList));
+
+                AppointmentAdapter adapter = new AppointmentAdapter();
+                recyclerView.setAdapter(adapter);
             }
 
             @Override
@@ -84,4 +80,45 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         });
     }
 
+    private class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder> {
+
+        @NonNull
+        @Override
+        public AppointmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_appointment, parent, false);
+            return new AppointmentViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull AppointmentViewHolder holder, int position) {
+            String info = appointmentList.get(position);
+            String appID = appointmentIDs.get(position);
+
+            holder.info.setText(info);
+
+            holder.deleteButton.setOnClickListener(v -> {
+                appointmentRef.child(appID).removeValue().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(MyAppointmentsActivity.this, "Appointment Cancelled", Toast.LENGTH_SHORT).show();
+                        loadAppointments();
+                    }
+                });
+            });
+        }
+
+        @Override
+        public int getItemCount() { return appointmentList.size(); }
+
+        class AppointmentViewHolder extends RecyclerView.ViewHolder {
+            TextView info;
+            ImageView deleteButton;
+
+            AppointmentViewHolder(@NonNull View itemView) {
+                super(itemView);
+                info = itemView.findViewById(R.id.appointment_info);
+                deleteButton = itemView.findViewById(R.id.button_delete);
+            }
+        }
+    }
 }
