@@ -72,7 +72,7 @@ final class Config {
     public static final long BASE_DELAY_MS = 1000;
 
     // IMPORTANT: Storing the key directly is risky. Use a secure backend/proxy in production.
-    public static final String GEMINI_API_KEY = "AIzaSyCra8isBteAFwM2BEFmqciDBENmu-Oj4z0";
+    public static final String GEMINI_API_KEY = "AIzaSyD9vxhtqgK-owGzAVcBrTfs7en_A8UW8f0";
 }
 
 public class AIDoctor extends Activity {
