@@ -144,7 +144,7 @@ public class Profile extends AppCompatActivity {
         String weight = etWeight.getText().toString().trim();
         String blood = etBlood.getText().toString().trim();
         String imageUriStr = selectedImageUri != null ? selectedImageUri.toString() : "";
-
+//sajjad
         if (name.isEmpty()) {
             Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show();
             return;
