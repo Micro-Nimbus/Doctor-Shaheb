@@ -1,5 +1,7 @@
 package com.micronimbus.doctorshaheb;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +31,13 @@ public class Blood extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blood);
+        ImageButton backBtn = findViewById(R.id.back);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         // Initialize views
         radioGroupDonate = findViewById(R.id.radioGroupDonate);
@@ -74,6 +83,7 @@ public class Blood extends AppCompatActivity {
 
         // Search donors
         btnSearchBlood.setOnClickListener(v -> searchBloodGroup());
+
     }
 
     private void submitDonation() {

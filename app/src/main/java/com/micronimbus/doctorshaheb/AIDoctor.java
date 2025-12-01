@@ -2,6 +2,7 @@ package com.micronimbus.doctorshaheb;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -71,8 +73,8 @@ final class Config {
     public static final int MAX_RETRIES = 5;
     public static final long BASE_DELAY_MS = 1000;
 
-    // IMPORTANT: Storing the key directly is risky. Use a secure backend/proxy in production.
-    public static final String GEMINI_API_KEY = "AIzaSyD9vxhtqgK-owGzAVcBrTfs7en_A8UW8f0";
+   
+    public static final String GEMINI_API_KEY = "AIzaSyC3EA4XL-fjlPg0XiKA0-4t0Mr4k-bsqD0";
 }
 
 public class AIDoctor extends Activity {
@@ -97,7 +99,13 @@ public class AIDoctor extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aidoctor);
+        ImageButton backBtn = findViewById(R.id.back);
 
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
         // Firebase setup
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         chatRef = FirebaseDatabase.getInstance().getReference("chats").child(userId);

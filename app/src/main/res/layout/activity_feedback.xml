@@ -13,6 +13,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
+        <ImageButton
+            android:layout_marginTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/back_24"
+            android:id="@+id/back"
+            />
 
         <TextView
             android:layout_width="match_parent"

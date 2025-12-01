@@ -23,10 +23,10 @@
         android:id="@+id/nav_blood"
         android:title="Angel Blood"
         android:icon="@drawable/bloodtype"/>
-    <item
-        android:id="@+id/nav_Test"
-        android:title="Medical test Information"
-        android:icon="@drawable/test"/>
+<!--    <item-->
+<!--        android:id="@+id/nav_Test"-->
+<!--        android:title="Medical test Information"-->
+<!--        android:icon="@drawable/test"/>-->
     <item
         android:id="@+id/nav_med_doc"
         android:title="Medical Documents"
