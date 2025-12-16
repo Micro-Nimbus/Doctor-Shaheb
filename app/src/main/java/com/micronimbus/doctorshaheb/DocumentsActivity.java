@@ -19,6 +19,7 @@ import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,13 @@ public class DocumentsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documents);
+        ImageButton backBtn = findViewById(R.id.back);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         recyclerView = findViewById(R.id.recycler_documents);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

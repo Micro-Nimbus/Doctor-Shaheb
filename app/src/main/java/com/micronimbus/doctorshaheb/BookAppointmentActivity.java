@@ -1,10 +1,12 @@
 package com.micronimbus.doctorshaheb;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -39,6 +41,13 @@ public class BookAppointmentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_appointment);
+        ImageButton backBtn = findViewById(R.id.backa);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         specializationSpinner = findViewById(R.id.spinnerSearchSpecialization);
         doctorSpinner = findViewById(R.id.spinnerSelectDoctor);

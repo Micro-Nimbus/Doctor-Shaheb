@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,13 @@ public class CartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+        ImageButton backBtn = findViewById(R.id.back);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, BuyMedicineActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         recyclerView = findViewById(R.id.cartRecycler);
         totalPriceText = findViewById(R.id.totalPrice);

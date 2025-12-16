@@ -9,6 +9,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <ImageButton
+            android:layout_marginTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/back_24"
+            android:id="@+id/back"
+            />
 
         <ImageView
             android:id="@+id/profileImage"

@@ -8,6 +8,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <ImageButton
+           android:layout_marginTop="5dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/back_24"
+            android:id="@+id/back"
+            />
 
         <!-- Blood Donation Question -->
         <TextView
@@ -16,7 +23,7 @@
             android:text="Do you want to donate blood?"
             android:textSize="16sp"
             android:textColor="#000000"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="2dp"/>
 
         <RadioGroup
             android:id="@+id/radioGroupDonate"

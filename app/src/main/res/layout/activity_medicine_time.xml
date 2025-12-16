@@ -10,12 +10,22 @@
     android:textColorHint="#ABAAAA"
     android:textColor="#000000">
 
+
     <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal">
+        <ImageButton
+            android:layout_marginTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/back_24"
+            android:id="@+id/back"
+            android:layout_gravity="start"
+            />
+
 
         <EditText
             android:id="@+id/etMedicineName"

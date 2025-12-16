@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Intent blood = new Intent(this, Blood.class);
                 startActivity(blood);
                 break;
-            case R.id.nav_Test:
-                Toast.makeText(this, "Angel blood selected", Toast.LENGTH_SHORT).show();
-                Intent test = new Intent(this, MainActivity.class);
+            case R.id.nav_see_order:
+                Toast.makeText(this, "AdminOrderActivity selected", Toast.LENGTH_SHORT).show();
+                Intent test = new Intent(this, AdminOrderActivity.class);
                 startActivity(test);
                 break;
             case R.id.nav_my_appointment:

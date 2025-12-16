@@ -3,7 +3,13 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:background="@android:color/white">
-
+    <ImageButton
+        android:layout_marginTop="10dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/back_24"
+        android:id="@+id/back"
+        />
     <ImageView
         android:id="@+id/medicineImage"
         android:layout_width="120dp"

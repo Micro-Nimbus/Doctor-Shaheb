@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,13 @@ public class MedicineTime extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_time);
+        ImageButton backBtn = findViewById(R.id.back);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         dbHelper = new AlarmDatabaseHelper(this);
 

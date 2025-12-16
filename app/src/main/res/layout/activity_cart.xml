@@ -4,6 +4,13 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:background="#FFFFFF">
+    <ImageButton
+        android:layout_marginTop="10dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/back_24"
+        android:id="@+id/back"
+        />
 
     <TextView
         android:id="@+id/totalPrice"

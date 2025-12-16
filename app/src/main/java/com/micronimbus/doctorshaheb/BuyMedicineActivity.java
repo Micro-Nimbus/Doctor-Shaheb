@@ -29,6 +29,13 @@ public class BuyMedicineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buy_medicine);
+        ImageButton backBtn = findViewById(R.id.back);
+
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
 
         recyclerView = findViewById(R.id.medicineRecycler);
         searchMedicine = findViewById(R.id.searchMedicine);

@@ -1,6 +1,8 @@
 package com.micronimbus.doctorshaheb;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,12 @@ public class About extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_about);
+        ImageButton backBtn = findViewById(R.id.back);
 
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish(); // optional (removes current activity from stack)
+        });
     }
 }
