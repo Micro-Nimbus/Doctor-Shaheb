@@ -91,6 +91,10 @@
                 android:id="@+id/nav_add_doctor"
                 android:title="Add Doctor"
                 android:icon="@drawable/addmedicine"/>
+            <item
+                android:id="@+id/nav_see_order"
+                android:title="See order"
+                android:icon="@drawable/addmedicine"/>
 
         </menu>
 
